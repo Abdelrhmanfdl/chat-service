@@ -50,7 +50,6 @@ func (wsh *WebSocketHandler) HandleWS(ctx *gin.Context) {
 		var dtoInMessage models.DtoInChatSocketMessage
 		if err := json.Unmarshal(message, &dtoInMessage); err == nil {
 			wsh.chatService.HandleSendMessage(userId, dtoInMessage)
-			// wsh.webSocketManager.SendMessage(userId, dtoInMessage)
 		} else {
 			log.Println("Failed to parse message:", err)
 			wsh.webSocketManager.SendMessage(userId, models.DtoResponseSocketResponse{Succeed: false, Message: "Failed to parse message"})
