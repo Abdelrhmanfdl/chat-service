@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  redis-registry:
+    image: "redis:latest"
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - redis_data:/usr/share/redis
+  rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/usr/share/rabbitmq
+
+volumes:
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
