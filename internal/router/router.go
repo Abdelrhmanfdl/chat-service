@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter() {
+func InitRouter(webSocketHandler handler.WebSocketHandler) {
 	r := gin.Default()
 	r.Use(middlewares.Authenticate())
 
-	r.GET("/ws", handler.WsHandler)
+	r.GET("/ws", webSocketHandler.HandleWS)
 
 	r.GET("/hello", func(ctx *gin.Context) {
 		ctx.Done()

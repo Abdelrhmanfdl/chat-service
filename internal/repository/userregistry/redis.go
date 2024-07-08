@@ -33,6 +33,10 @@ func (r *RedisRegistry) UnregisterUser(userId string) error {
 	return r.client.Del(context.Background(), userId).Err()
 }
 
+func (r *RedisRegistry) IsNonExistingError(err error) bool {
+	return err == redis.Nil
+}
+
 func (r *RedisRegistry) Close() error {
 	return r.client.Close()
 }
