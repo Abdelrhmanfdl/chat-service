@@ -37,9 +37,9 @@ func (r *RabbitMQ) Publish(queueName string, message models.QueueMessage) error 
 	}
 	defer rch.Close()
 
-	_, err = rch.QueueDeclare(queueName, true, false, false, false, nil)
+	_, err = rch.QueueDeclare(queueName, true, true, false, false, nil)
 	if err != nil {
-		log.Fatalf("Failed to declare a queue: %v", err)
+		log.Fatalf("Failed to declare a queue for publishing: %v", err)
 	}
 
 	msgBytes, _ := json.Marshal(message)
@@ -62,7 +62,7 @@ func (r *RabbitMQ) Consume(queueName string) (<-chan models.QueueMessage, error)
 
 	_, err = rch.QueueDeclare(queueName, true, true, false, false, nil)
 	if err != nil {
-		log.Fatalf("Failed to declare a queue: %v", err)
+		log.Fatalf("Failed to declare queue for consumption: %v", err)
 	}
 
 	deliveries, err := rch.Consume(queueName, "", true, true, false, false, nil)
