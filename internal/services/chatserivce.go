@@ -69,7 +69,7 @@ func (chatService *ChatService) HandleUserDisconnection(userId string) {
 	chatService.userRegistry.UnregisterUser(userId)
 }
 
-func (chatService *ChatService) HandleSendMessage(userId string, message models.DtoMessage) {
+func (chatService *ChatService) HandleSendMessage(userId string, message models.DtoInChatSocketMessage) {
 	queueName, err := chatService.userRegistry.GetUserRegistry(userId)
 	if err != nil {
 		if chatService.userRegistry.IsNonExistingError(err) {
@@ -92,5 +92,5 @@ func (chatService *ChatService) HandleSendMessage(userId string, message models.
 }
 
 func (chatService *ChatService) HandleReceiveMessage(message models.QueueMessage) {
-	chatService.webSocketManager.SendMessage(models.DtoMessage(message))
+	chatService.webSocketManager.SendMessage(message.ToUser, models.DtoOutChatSocketMessage(message))
 }

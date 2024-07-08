@@ -41,8 +41,8 @@ func (m *WebSocketManager) GetSafeWebSocket(userId string) *SafeWebSocket {
 	return m.connections[userId]
 }
 
-func (m *WebSocketManager) SendMessage(msg models.DtoMessage) {
-	if safeSocketConn := m.GetSafeWebSocket(msg.ToUser); safeSocketConn != nil {
+func (m *WebSocketManager) SendMessage(toUserId string, msg models.DtoOutSocketMessage) {
+	if safeSocketConn := m.GetSafeWebSocket(toUserId); safeSocketConn != nil {
 		safeSocketConn.mu.Lock()
 		defer safeSocketConn.mu.Unlock()
 		safeSocketConn.Conn.WriteJSON(msg)

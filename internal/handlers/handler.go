@@ -47,13 +47,13 @@ func (wsh *WebSocketHandler) HandleWS(ctx *gin.Context) {
 		}
 		log.Printf("Received from user %s: %s", userId, message)
 
-		var dtoMessage models.DtoMessage
-		if err := json.Unmarshal(message, &dtoMessage); err == nil {
-			wsh.chatService.HandleSendMessage(userId, dtoMessage)
-			conn.WriteJSON(models.SocketResponse{Succeed: true})
+		var dtoInMessage models.DtoInChatSocketMessage
+		if err := json.Unmarshal(message, &dtoInMessage); err == nil {
+			wsh.chatService.HandleSendMessage(userId, dtoInMessage)
+			wsh.webSocketManager.SendMessage(userId, dtoInMessage)
 		} else {
 			log.Println("Failed to parse message:", err)
-			conn.WriteJSON(models.SocketResponse{Succeed: false, Message: "Failed to parse message"})
+			wsh.webSocketManager.SendMessage(userId, models.DtoResponseSocketResponse{Succeed: false, Message: "Failed to parse message"})
 		}
 	}
 

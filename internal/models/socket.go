@@ -1,11 +1,20 @@
 package models
 
-type SocketResponse struct {
+type DtoInSocketMessage interface{}
+type DtoOutSocketMessage interface{}
+
+type DtoResponseSocketResponse struct {
 	Succeed bool
 	Message string
 }
 
-type DtoMessage struct {
+type DtoInChatSocketMessage struct {
+	FromUser string
+	ToUser   string
+	Content  string
+}
+
+type DtoOutChatSocketMessage struct {
 	FromUser string
 	ToUser   string
 	Content  string
