@@ -70,7 +70,7 @@ func (chatService *ChatService) HandleUserDisconnection(userId string) {
 }
 
 func (chatService *ChatService) HandleSendMessage(userId string, message models.DtoInChatSocketMessage) {
-	queueName, err := chatService.userRegistry.GetUserRegistry(userId)
+	queueName, err := chatService.userRegistry.GetUserRegistry(message.ToUser)
 	if err != nil {
 		if chatService.userRegistry.IsNonExistingError(err) {
 			log.Println("User not registered")
@@ -80,6 +80,7 @@ func (chatService *ChatService) HandleSendMessage(userId string, message models.
 		return
 	}
 
+	log.Println(">>> Pup to queue: ", queueName)
 	err = chatService.messageQueue.Publish(queueName, models.QueueMessage{
 		FromUser: userId,
 		ToUser:   message.ToUser,
