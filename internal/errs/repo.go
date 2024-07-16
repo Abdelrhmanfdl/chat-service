@@ -25,3 +25,11 @@ type TimeoutError struct {
 func (e *TimeoutError) Error() string {
 	return fmt.Sprintf("timeout error: %s", e.Message)
 }
+
+type UnauthorizedFetchError struct {
+	Message string
+}
+
+func (e *UnauthorizedFetchError) Error() string {
+	return fmt.Sprintf("unauthorized fetch from database: %s", e.Message)
+}

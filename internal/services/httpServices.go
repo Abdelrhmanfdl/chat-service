@@ -1,6 +1,7 @@
 package services
 
 import (
+	"chat-chat-go/internal/errs"
 	"chat-chat-go/internal/models"
 )
 
@@ -49,4 +50,17 @@ func (chatService *ChatService) GetConversations(userId string, nextPage string)
 
 	newNextPage = string(newNextPageBytes)
 	return conversationDtos, newNextPage, nil
+}
+
+func (chatService *ChatService) GetMessagesByConversation(userId string, conversationId string, nextPage string) (messages []models.Message, newNextPage string, err error) {
+	messages, newNextPageBytes, err := chatService.chatRepository.GetMessagesByConversation(conversationId, []byte(nextPage))
+	if err != nil {
+		return nil, "", err
+	}
+
+	if len(messages) > 0 && (messages[0].ReceiverId == userId || messages[0].SenderId == userId) {
+		return nil, "", &errs.UnauthorizedFetchError{Message: "unauthorized fetching messages"}
+	}
+
+	return messages, string(newNextPageBytes), nil
 }

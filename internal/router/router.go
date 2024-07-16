@@ -16,5 +16,7 @@ func InitRouter(webSocketHandler *handler.WebSocketHandler, httpHandler *handler
 
 	r.GET("/getConversations/:nextPage", httpHandler.HandlerGetConversations)
 
+	r.GET("/getMessages/:nextPage", httpHandler.HandlerGetMessagesByConversation)
+
 	r.Run(":" + os.Getenv("PORT"))
 }
