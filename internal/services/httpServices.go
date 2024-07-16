@@ -9,8 +9,8 @@ func (chatService *ChatService) fillConversationDtosByUsersData(conversations []
 	conversationMap := make(map[string]int)
 
 	for idx, conversation := range conversations {
-		othersIds = append(othersIds, conversation.SenderId)
-		conversationMap[conversation.SenderId] = idx
+		othersIds = append(othersIds, conversation.Participant1Id)
+		conversationMap[conversation.Participant1Id] = idx
 	}
 
 	othersDtos, err := chatService.userService.GetUsersData(othersIds)
@@ -21,23 +21,23 @@ func (chatService *ChatService) fillConversationDtosByUsersData(conversations []
 	for idx, otherDto := range othersDtos {
 		conversation := conversations[conversationMap[otherDto.ID]]
 		conversationDtos = append(conversationDtos, models.ConversationDto{
-			Sender:               models.UserDto{ID: conversation.SenderId}, // complete
-			Participant:          models.UserDto{ID: otherDto.ID, Username: otherDto.Username},
+			Participant1:         models.UserDto{ID: conversation.Participant1Id}, // complete
+			Participant2:         models.UserDto{ID: otherDto.ID, Username: otherDto.Username},
 			ConversationId:       conversation.ConversationId,
 			LastMessageId:        conversation.LastMessageId,
 			LastMessageContent:   conversation.LastMessageContent,
 			LastMessageTimestamp: conversation.LastMessageTimestamp,
 		})
 
-		othersIds = append(othersIds, conversation.SenderId)
-		conversationMap[conversation.SenderId] = idx
+		othersIds = append(othersIds, conversation.Participant1Id)
+		conversationMap[conversation.Participant1Id] = idx
 	}
 
 	return conversationDtos, err
 }
 
 func (chatService *ChatService) GetConversations(userId string, nextPage string) (conversationDtos []models.ConversationDto, newNextPage string, err error) {
-	conversations, newNextPageBytes, err := chatService.chatRepository.GetConversationsBySender(userId, []byte(nextPage))
+	conversations, newNextPageBytes, err := chatService.chatRepository.GetConversationsByUser(userId, []byte(nextPage))
 	if err != nil {
 		return nil, "", err
 	}

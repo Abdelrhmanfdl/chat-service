@@ -3,9 +3,9 @@ package models
 import "time"
 
 type Conversation struct {
-	SenderId             string    `json:"sender_id"`
+	Participant1Id       string    `json:"participant1_id"`
+	Participant2Id       string    `json:"participant2_id"`
 	ConversationId       string    `json:"conversation_id"`
-	ParticipantId        string    `json:"participant_id"`
 	LastMessageId        string    `json:"last_message_id"`
 	LastMessageContent   string    `json:"last_message_content"`
 	LastMessageTimestamp time.Time `json:"last_message_timestamp"`

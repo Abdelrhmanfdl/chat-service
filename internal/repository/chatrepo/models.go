@@ -8,9 +8,9 @@ import (
 )
 
 type scyllaConversation struct {
-	SenderId             gocql.UUID `json:"sender_id"`
+	Participant1Id       gocql.UUID `json:"participant1_id"`
+	Participant2Id       gocql.UUID `json:"participant2_id"`
 	ConversationId       gocql.UUID `json:"conversation_id"`
-	ParticipantId        gocql.UUID `json:"participant_id"`
 	LastMessageId        gocql.UUID `json:"last_message_id"`
 	LastMessageContent   string     `json:"last_message_content"`
 	LastMessageTimestamp time.Time  `json:"last_message_timestamp"`
@@ -19,12 +19,12 @@ type scyllaConversation struct {
 
 func createScyllaConversation(conversation models.Conversation) (newScyllaConversation *scyllaConversation, err error) {
 	newScyllaConversation = &scyllaConversation{}
-	newScyllaConversation.SenderId, err = gocql.ParseUUID(conversation.SenderId)
+	newScyllaConversation.Participant1Id, err = gocql.ParseUUID(conversation.Participant1Id)
 	if err != nil {
 		return nil, err
 	}
+	newScyllaConversation.Participant2Id, err = gocql.ParseUUID(conversation.Participant2Id)
 
-	newScyllaConversation.ParticipantId, err = gocql.ParseUUID(conversation.ParticipantId)
 	if err != nil {
 		return nil, err
 	}
@@ -37,9 +37,9 @@ func createScyllaConversation(conversation models.Conversation) (newScyllaConver
 
 func (c *scyllaConversation) ConvertToVanillaConversation() *models.Conversation {
 	return &models.Conversation{
-		SenderId:             c.SenderId.String(),
+		Participant1Id:       c.Participant1Id.String(),
+		Participant2Id:       c.Participant2Id.String(),
 		ConversationId:       c.ConversationId.String(),
-		ParticipantId:        c.ParticipantId.String(),
 		LastMessageId:        c.LastMessageId.String(),
 		LastMessageContent:   c.LastMessageContent,
 		LastMessageTimestamp: c.LastMessageTimestamp,

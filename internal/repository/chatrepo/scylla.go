@@ -28,21 +28,24 @@ func (r *ScyllaChatRepository) InsertConversation(conversation models.Conversati
 	if err != nil {
 		log.Println("can not create new conversation:", err)
 	}
-	query := `INSERT INTO conversations_by_user (sender_id, conversation_id, participant_id, created_at) VALUES(?, ?, ?, ?)`
-	err = r.session.Query(query, newConv.SenderId, newConv.ConversationId, newConv.ParticipantId, newConv.CreatedAt, query).Exec()
-	return newConv.ConversationId.String(), err
+
+	batch := r.session.NewBatch(gocql.LoggedBatch)
+	query := `INSERT INTO conversations_by_user (participant1_id, conversation_id, participant2_id, created_at) VALUES(?, ?, ?, ?)`
+	batch.Query(query, newConv.Participant1Id, newConv.ConversationId, newConv.Participant2Id, newConv.CreatedAt)
+	batch.Query(query, newConv.Participant2Id, newConv.ConversationId, newConv.Participant1Id, newConv.CreatedAt)
+	return newConv.ConversationId.String(), r.session.ExecuteBatch(batch)
 }
 
-func (r *ScyllaChatRepository) GetConversationsBySender(senderId string, lastPageState []byte) (conversations []models.Conversation, pageState []byte, err error) {
-	queryStr := `SELECT sender_id, conversation_id, participant_id, last_message_id, last_message_content, last_message_timestamp 
+func (r *ScyllaChatRepository) GetConversationsByUser(userId string, lastPageState []byte) (conversations []models.Conversation, pageState []byte, err error) {
+	queryStr := `SELECT participant1_id, conversation_id, participant2_id, last_message_id, last_message_content, last_message_timestamp 
 				 FROM conversations_by_user
-				 WHERE sender_id = ?`
+				 WHERE participant1_id = ?`
 
-	queryItr := r.session.Query(queryStr, senderId).PageSize(r.pageSize).PageState(lastPageState).Iter()
+	queryItr := r.session.Query(queryStr, userId).PageSize(r.pageSize).PageState(lastPageState).Iter()
 
 	conversation := models.Conversation{}
 
-	for queryItr.Scan(&conversation.SenderId, &conversation.ConversationId, &conversation.ParticipantId,
+	for queryItr.Scan(&conversation.Participant1Id, &conversation.ConversationId, &conversation.Participant2Id,
 		&conversation.LastMessageContent, &conversation.LastMessageTimestamp) {
 		conversations = append(conversations, conversation)
 	}
@@ -65,7 +68,6 @@ func (r *ScyllaChatRepository) InsertMessage(message models.Message) (err error)
 	batch.Query(queryToMessages, newMessage.SenderId, newMessage.ReceiverId, newMessage.ConversationId, newMessage.MessageId, newMessage.Content, newMessage.CreatedAt)
 	queryToMessagesByConversation := `INSERT INTO messages_by_conversation (sender_id, receiver_id, conversation_id, message_id, content, created_at) VALUES(?, ?, ?, ?)`
 	batch.Query(queryToMessagesByConversation, newMessage.SenderId, newMessage.ReceiverId, newMessage.ConversationId, newMessage.MessageId, newMessage.Content, newMessage.CreatedAt)
-
 	return r.session.ExecuteBatch(batch)
 }
 
