@@ -1,0 +1,3 @@
+{
+  "conventionalCommits.scopes": ["publish to message queue", "repo", "api"]
+}
