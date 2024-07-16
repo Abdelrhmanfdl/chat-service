@@ -10,8 +10,8 @@
 
 #### Todos
 
-- [] Cleaner project
-- [] Unit and Integration tests
-- [] CI/CD
-- [] Deployment with K8S
-- [] Observability layer
+- [ ] Cleaner project
+- [ ] Unit and Integration tests
+- [ ] CI/CD
+- [ ] Deployment with K8S
+- [ ] Observability layer
