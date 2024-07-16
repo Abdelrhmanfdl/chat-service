@@ -85,12 +85,11 @@ func (chatService *ChatService) HandleSendMessage(userId string, message models.
 		if chatService.userRegistry.IsNonExistingError(err) {
 			log.Println("User not registered")
 		} else {
-			log.Fatalln("Failed to find user registry: ", err)
+			log.Println("Failed to find user registry: ", err)
 		}
 		return
 	}
 
-	log.Println(">>> Pup to queue: ", queueName)
 	err = chatService.messageQueue.Publish(queueName, models.QueueMessage{
 		FromUser: userId,
 		ToUser:   message.ToUser,
