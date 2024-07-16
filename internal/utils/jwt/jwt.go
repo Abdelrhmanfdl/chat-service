@@ -2,12 +2,13 @@ package jwt
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var secretKey = []byte("secret")
+var secretKey = []byte(os.Getenv("JWT_SECRET"))
 
 type Claims struct {
 	jwt.RegisteredClaims
