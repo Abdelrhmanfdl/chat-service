@@ -1,3 +1,4 @@
 /mocker*
 db_setup.sh
 init_env.sh
+docker-compose.*
