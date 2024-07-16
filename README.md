@@ -8,7 +8,7 @@
 
 ![alt text](./_images/design.png)
 
-#### Todos
+### Todos
 
 - [ ] Cleaner project
 - [ ] Unit and Integration tests
