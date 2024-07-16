@@ -15,7 +15,8 @@ func main() {
 	socketManager := websocketmanager.NewWebSocketManager()
 	chatService := service.NewChatService(socketManager)
 	socketHandler := handlers.NewWebSocketHandler(chatService, socketManager)
+	httpHandler := handlers.NewHttpHandler(chatService)
 
 	chatService.InitService()
-	router.InitRouter(*socketHandler)
+	router.InitRouter(socketHandler, httpHandler)
 }

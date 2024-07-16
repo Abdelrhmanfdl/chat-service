@@ -8,14 +8,14 @@ SCYLLA_PORT="9042"
 CREATE_KEYSPACE_CQL="CREATE KEYSPACE IF NOT EXISTS chatchatgo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'};"
 
 CREATE_TABLE_conversations_by_user_CQL="CREATE TABLE IF NOT EXISTS conversations_by_user (
-    sender_id UUID,
+    participant1_id UUID,
+    participant2_id UUID,
     conversation_id TIMEUUID,
-    participant_id UUID,
     last_message_id UUID,
     last_message_content TEXT,
     last_message_timestamp TIMESTAMP,
     created_at TIMESTAMP,
-    PRIMARY KEY((sender_id), conversation_id)
+    PRIMARY KEY((participant1_id), conversation_id)
 ); WITH CLUSTERING ORDER BY (conversation_id, DESC)"
 
 CREATE_TABLE_messages_CQL="CREATE TABLE IF NOT EXISTS messages (

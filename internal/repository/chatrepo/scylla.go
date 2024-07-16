@@ -12,7 +12,7 @@ type ScyllaChatRepository struct {
 	pageSize int
 }
 
-func NewScyllaUserRepository(scyllaURL string) *ScyllaChatRepository {
+func NewScyllaChatRepository(scyllaURL string) *ScyllaChatRepository {
 	cluster := gocql.NewCluster(scyllaURL)
 	cluster.Keyspace = "chatchatgo"
 	cluster.Consistency = gocql.Quorum

@@ -3,7 +3,9 @@ package services
 import (
 	"chat-chat-go/internal/messagequeue"
 	"chat-chat-go/internal/models"
+	"chat-chat-go/internal/repository/chatrepo"
 	userregistry "chat-chat-go/internal/repository/userregistry"
+	"chat-chat-go/internal/services/userservice"
 	"chat-chat-go/internal/websocketmanager"
 	"log"
 	"os"
@@ -14,29 +16,37 @@ type ChatService struct {
 	messageQueue     messagequeue.MessageQueue
 	userRegistry     userregistry.UserRegistry
 	webSocketManager *websocketmanager.WebSocketManager
+	chatRepository   chatrepo.ChatRepository
+	userService      *userservice.UserService
 }
 
 func NewChatService(webSocketManager *websocketmanager.WebSocketManager) *ChatService {
 	return &ChatService{
 		webSocketManager: webSocketManager,
+		userService:      userservice.NewUserService(),
 	}
 }
 
 func (chatService *ChatService) connectToMessageQueue() {
 	var err error
-	chatService.messageQueue, err = messagequeue.NewRabbitMQ("amqp://127.0.0.1")
+	chatService.messageQueue, err = messagequeue.NewRabbitMQ(os.Getenv("MESSAGE_QUEUE_URL"))
 	if err != nil {
 		log.Fatal("Can not connect message queue:", err)
 	}
 }
 
+func (chatService *ChatService) connectToChatRepository() {
+	chatService.chatRepository = chatrepo.NewScyllaChatRepository(os.Getenv("CHAT_REPO_URL"))
+}
+
 func (chatService *ChatService) connectToUserRegistry() {
-	chatService.userRegistry = userregistry.NewRedisRepository("localhost:6379")
+	chatService.userRegistry = userregistry.NewRedisRepository(os.Getenv("USER_REGISTRY_URL"))
 }
 
 func (chatService *ChatService) InitService() {
 	chatService.connectToMessageQueue()
 	chatService.connectToUserRegistry()
+	chatService.connectToChatRepository()
 	chatService.instanceId = os.Getenv("INSTANCE_ID")
 
 	ch, err := chatService.messageQueue.Consume(chatService.InstanceIdToQueueName(chatService.instanceId))
